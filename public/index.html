@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Nhân Quang &amp; Kim Oanh — Wedding Invitation</title>
   <meta name="description" content="Join us to celebrate the wedding of Nhân Quang and Kim Oanh." />
+  <meta name="theme-color" content="#8b6f5c" />
   <link rel="icon" href="/favicon.ico" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -24,6 +25,19 @@
   <!-- ── Particle Canvas ── -->
   <canvas id="particles-canvas" aria-hidden="true"></canvas>
 
+  <!-- ── Lightbox Modal ── -->
+  <div id="lightbox-modal" class="lightbox-modal" aria-hidden="true" role="dialog" aria-label="Image lightbox">
+    <button class="lightbox-close" aria-label="Close lightbox">✕</button>
+    <button class="lightbox-nav lightbox-prev" aria-label="Previous image">❮</button>
+    <div class="lightbox-container">
+      <img id="lightbox-image" src="" alt="Enlarged gallery image" />
+    </div>
+    <button class="lightbox-nav lightbox-next" aria-label="Next image">❯</button>
+    <div class="lightbox-counter">
+      <span id="lightbox-current">1</span> / <span id="lightbox-total">17</span>
+    </div>
+  </div>
+
   <!-- ── Music Toggle ── -->
   <button id="music-toggle" aria-label="Toggle background music" title="Toggle music">
     <svg id="music-icon-on" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
@@ -36,11 +50,18 @@
   <!-- ── Back to Top ── -->
   <button id="back-to-top" aria-label="Back to top">&#8679;</button>
 
+  <!-- ── Sticky Mobile CTA ── -->
+  <div id="sticky-cta" class="sticky-cta" aria-label="Quick actions">
+    <a href="#map" class="sticky-btn sticky-btn-location" title="View location">📍</a>
+    <a href="#gallery" class="sticky-btn sticky-btn-gallery" title="View gallery">🖼️</a>
+    <a href="#rsvp" class="sticky-btn sticky-btn-rsvp" title="RSVP">💌</a>
+  </div>
+
   <!-- ══════════════════════════════════════════════
-       HERO
+       HERO — IMPROVED ANIMATIONS & ZOOM EFFECT
   ══════════════════════════════════════════════ -->
   <section id="hero" class="parallax-section">
-    <div class="parallax-bg" style="background-image:url('assets/cover.jpg')"></div>
+    <div class="parallax-bg hero-bg-zoom" style="background-image:url('assets/cover.jpg')"></div>
     <div class="hero-overlay"></div>
     <div class="hero-content fade-in-hero">
       <p class="hero-sub animate-fade-up" style="animation-delay:.2s">We are getting married</p>
@@ -50,8 +71,8 @@
       <div class="hero-divider animate-fade-up" style="animation-delay:.85s">
         <span></span><svg width="24" height="24" viewBox="0 0 24 24"><path fill="currentColor" d="M12 21.593c-5.63-5.539-11-10.297-11-14.402C1 3.145 4.18 1 7.27 1c2.084 0 4.053 1.136 5.232 2.905C13.677 2.136 15.646 1 17.73 1 20.82 1 24 3.145 24 7.191c0 4.105-5.37 8.863-11 14.402z"/></svg><span></span>
       </div>
-      <p class="hero-date animate-fade-up" style="animation-delay:1.1s"><!-- WEDDING DATE --> [April 05, 2026]</p>
-      <p class="hero-venue animate-fade-up" style="animation-delay:1.3s"><!-- VENUE NAME --> [Mê Linh] &bull; [Hà Nội, Việt Nam]</p>
+      <p class="hero-date animate-fade-up" style="animation-delay:1.1s">April 05, 2026</p>
+      <p class="hero-venue animate-fade-up" style="animation-delay:1.3s">Mê Linh &bull; Hà Nội, Việt Nam</p>
       <a href="#rsvp" class="btn-primary animate-fade-up" style="animation-delay:1.5s">RSVP Now</a>
     </div>
     <div class="scroll-hint animate-fade-up" style="animation-delay:1.8s">
@@ -60,7 +81,7 @@
   </section>
 
   <!-- ══════════════════════════════════════════════
-       COUPLE
+       COUPLE — OUR STORY
   ══════════════════════════════════════════════ -->
   <section id="couple" class="section scroll-fade">
     <div class="container">
@@ -77,12 +98,10 @@
           <div class="couple-names">
             <div class="person">
               <h3>Nhân Quang</h3>
-              <p><!-- Groom bio / short description --></p>
             </div>
             <span class="couple-and">&amp;</span>
             <div class="person">
               <h3>Kim Oanh</h3>
-              <p><!-- Bride bio / short description --></p>
             </div>
           </div>
         </div>
@@ -102,30 +121,30 @@
         <div class="event-card scroll-fade">
           <div class="event-icon">&#128141;</div>
           <h3>Lễ Thành Hôn</h3>
-          <p class="event-time"><!-- TIME --> [11:00]</p>
-          <p class="event-venue"><!-- VENUE --> [Mê Linh]</p>
-          <p class="event-address"><!-- ADDRESS --> [Hà Nội, Việt Nam]</p>
+          <p class="event-time">11:00</p>
+          <p class="event-venue">Mê Linh</p>
+          <p class="event-address">Hà Nội, Việt Nam</p>
         </div>
         <div class="event-card event-card--featured scroll-fade">
           <div class="event-icon">&#127801;</div>
           <h3>Tiệc Cưới</h3>
-          <p class="event-time"><!-- TIME --> [17:00]</p>
-          <p class="event-venue"><!-- VENUE --> [Mê Linh]</p>
-          <p class="event-address"><!-- ADDRESS --> [Hà Nội, Việt Nam]</p>
+          <p class="event-time">17:00</p>
+          <p class="event-venue">Mê Linh</p>
+          <p class="event-address">Hà Nội, Việt Nam</p>
         </div>
         <div class="event-card scroll-fade">
           <div class="event-icon">&#127881;</div>
           <h3>After Party</h3>
-          <p class="event-time"><!-- TIME --> [20:00]</p>
-          <p class="event-venue"><!-- VENUE --> [Mê Linh]</p>
-          <p class="event-address"><!-- ADDRESS --> [Hà Nội, Việt Nam]</p>
+          <p class="event-time">20:00</p>
+          <p class="event-venue">Mê Linh</p>
+          <p class="event-address">Hà Nội, Việt Nam</p>
         </div>
       </div>
     </div>
   </section>
 
   <!-- ══════════════════════════════════════════════
-       COUNTDOWN
+       COUNTDOWN — PULSE & ANIMATED
   ══════════════════════════════════════════════ -->
   <section id="countdown" class="section scroll-fade">
     <div class="container">
@@ -133,19 +152,19 @@
       <div class="divider-ornament">&#10022;</div>
       <div class="countdown-grid">
         <div class="countdown-item scroll-fade">
-          <span class="countdown-number" id="cd-days">00</span>
+          <span class="countdown-number pulse" id="cd-days">00</span>
           <span class="countdown-label">Days</span>
         </div>
         <div class="countdown-item scroll-fade">
-          <span class="countdown-number" id="cd-hours">00</span>
+          <span class="countdown-number pulse" id="cd-hours">00</span>
           <span class="countdown-label">Hours</span>
         </div>
         <div class="countdown-item scroll-fade">
-          <span class="countdown-number" id="cd-minutes">00</span>
+          <span class="countdown-number pulse" id="cd-minutes">00</span>
           <span class="countdown-label">Minutes</span>
         </div>
         <div class="countdown-item scroll-fade">
-          <span class="countdown-number" id="cd-seconds">00</span>
+          <span class="countdown-number pulse" id="cd-seconds">00</span>
           <span class="countdown-label">Seconds</span>
         </div>
       </div>
@@ -153,36 +172,36 @@
   </section>
 
   <!-- ══════════════════════════════════════════════
-       GALLERY
+       GALLERY — LIGHTBOX & GRID
   ══════════════════════════════════════════════ -->
   <section id="gallery" class="section section-alt-soft scroll-fade">
     <div class="container">
       <h2 class="section-title">Our Gallery</h2>
       <div class="divider-ornament">&#10022;</div>
-      <div class="gallery-grid">
-        <div class="gallery-item scroll-fade"><img src="assets/gallery1.jpg" alt="Gallery photo 1" loading="lazy" /></div>
-        <div class="gallery-item scroll-fade"><img src="assets/gallery2.jpg" alt="Gallery photo 2" loading="lazy" /></div>
-        <div class="gallery-item scroll-fade"><img src="assets/gallery3.jpg" alt="Gallery photo 3" loading="lazy" /></div>
-        <div class="gallery-item scroll-fade"><img src="assets/gallery4.jpg" alt="Gallery photo 4" loading="lazy" /></div>
-        <div class="gallery-item gallery-item--tall scroll-fade"><img src="assets/gallery5.jpg" alt="Gallery photo 5" loading="lazy" /></div>
-        <div class="gallery-item scroll-fade"><img src="assets/gallery6.jpg" alt="Gallery photo 6" loading="lazy" /></div>
-        <div class="gallery-item scroll-fade"><img src="assets/gallery7.jpg" alt="Gallery photo 7" loading="lazy" /></div>
-        <div class="gallery-item scroll-fade"><img src="assets/gallery8.jpg" alt="Gallery photo 8" loading="lazy" /></div>
-        <div class="gallery-item gallery-item--tall scroll-fade"><img src="assets/gallery9.jpg" alt="Gallery photo 9" loading="lazy" /></div>
-        <div class="gallery-item scroll-fade"><img src="assets/gallery10.jpg" alt="Gallery photo 10" loading="lazy" /></div>
-        <div class="gallery-item scroll-fade"><img src="assets/gallery11.jpg" alt="Gallery photo 11" loading="lazy" /></div>
-        <div class="gallery-item scroll-fade"><img src="assets/gallery12.jpg" alt="Gallery photo 12" loading="lazy" /></div>
-        <div class="gallery-item scroll-fade"><img src="assets/gallery13.jpg" alt="Gallery photo 13" loading="lazy" /></div>
-        <div class="gallery-item scroll-fade"><img src="assets/gallery14.jpg" alt="Gallery photo 14" loading="lazy" /></div>
-        <div class="gallery-item gallery-item--tall scroll-fade"><img src="assets/gallery15.jpg" alt="Gallery photo 15" loading="lazy" /></div>
-        <div class="gallery-item scroll-fade"><img src="assets/gallery16.jpg" alt="Gallery photo 16" loading="lazy" /></div>
-        <div class="gallery-item scroll-fade"><img src="assets/gallery17.jpg" alt="Gallery photo 17" loading="lazy" /></div>
+      <div class="gallery-grid" role="grid" aria-label="Gallery grid">
+        <button class="gallery-item scroll-fade" data-index="0"><img src="assets/gallery1.jpg" alt="Gallery photo 1" loading="lazy" /></button>
+        <button class="gallery-item scroll-fade" data-index="1"><img src="assets/gallery2.jpg" alt="Gallery photo 2" loading="lazy" /></button>
+        <button class="gallery-item scroll-fade" data-index="2"><img src="assets/gallery3.jpg" alt="Gallery photo 3" loading="lazy" /></button>
+        <button class="gallery-item scroll-fade" data-index="3"><img src="assets/gallery4.jpg" alt="Gallery photo 4" loading="lazy" /></button>
+        <button class="gallery-item gallery-item--tall scroll-fade" data-index="4"><img src="assets/gallery5.jpg" alt="Gallery photo 5" loading="lazy" /></button>
+        <button class="gallery-item scroll-fade" data-index="5"><img src="assets/gallery6.jpg" alt="Gallery photo 6" loading="lazy" /></button>
+        <button class="gallery-item scroll-fade" data-index="6"><img src="assets/gallery7.jpg" alt="Gallery photo 7" loading="lazy" /></button>
+        <button class="gallery-item scroll-fade" data-index="7"><img src="assets/gallery8.jpg" alt="Gallery photo 8" loading="lazy" /></button>
+        <button class="gallery-item gallery-item--tall scroll-fade" data-index="8"><img src="assets/gallery9.jpg" alt="Gallery photo 9" loading="lazy" /></button>
+        <button class="gallery-item scroll-fade" data-index="9"><img src="assets/gallery10.jpg" alt="Gallery photo 10" loading="lazy" /></button>
+        <button class="gallery-item scroll-fade" data-index="10"><img src="assets/gallery11.jpg" alt="Gallery photo 11" loading="lazy" /></button>
+        <button class="gallery-item scroll-fade" data-index="11"><img src="assets/gallery12.jpg" alt="Gallery photo 12" loading="lazy" /></button>
+        <button class="gallery-item scroll-fade" data-index="12"><img src="assets/gallery13.jpg" alt="Gallery photo 13" loading="lazy" /></button>
+        <button class="gallery-item scroll-fade" data-index="13"><img src="assets/gallery14.jpg" alt="Gallery photo 14" loading="lazy" /></button>
+        <button class="gallery-item gallery-item--tall scroll-fade" data-index="14"><img src="assets/gallery15.jpg" alt="Gallery photo 15" loading="lazy" /></button>
+        <button class="gallery-item scroll-fade" data-index="15"><img src="assets/gallery16.jpg" alt="Gallery photo 16" loading="lazy" /></button>
+        <button class="gallery-item scroll-fade" data-index="16"><img src="assets/gallery17.jpg" alt="Gallery photo 17" loading="lazy" /></button>
       </div>
     </div>
   </section>
 
   <!-- ══════════════════════════════════════════════
-       MAP
+       MAP — LOCATION & ADD TO CALENDAR
   ══════════════════════════════════════════════ -->
   <section id="map" class="section scroll-fade">
     <div class="container">
@@ -191,33 +210,39 @@
       <div class="map-wrapper scroll-fade">
         <img class="map-img" src="assets/map.png" alt="Venue map" loading="lazy" />
         <div class="map-overlay">
-          <p><!-- VENUE NAME --> [Thôn 3 Hạ Lôi, Mê Linh]</p>
-          <!-- REPLACE href WITH YOUR GOOGLE MAPS LINK -->
-          <a class="btn-primary" href="https://maps.app.goo.gl/Eb1qoeizorWkp8yz8" target="_blank" rel="noopener">
-            Open in Google Maps &#8599;
-          </a>
+          <p>Thôn 3 Hạ Lôi, Mê Linh</p>
+          <div class="map-actions">
+            <a class="btn-primary btn-sm" href="https://maps.app.goo.gl/Eb1qoeizorWkp8yz8" target="_blank" rel="noopener">
+              Open in Maps &#8599;
+            </a>
+            <a class="btn-secondary btn-sm" href="javascript:void(0)" id="add-to-cal" title="Add to calendar">
+              Add to Calendar 📅
+            </a>
+          </div>
         </div>
       </div>
     </div>
   </section>
 
   <!-- ══════════════════════════════════════════════
-       RSVP
+       RSVP — IMPROVED FORM UX
   ══════════════════════════════════════════════ -->
   <section id="rsvp" class="section section-alt-soft scroll-fade">
     <div class="container rsvp-container">
       <h2 class="section-title">RSVP</h2>
       <div class="divider-ornament">&#10022;</div>
-      <p class="rsvp-note">Kindly respond by <strong><!-- RSVP DEADLINE --> [April 05, 2026]</strong></p>
+      <p class="rsvp-note">Kindly respond by <strong>April 05, 2026</strong></p>
       <form id="rsvp-form" class="rsvp-form scroll-fade" netlify name="rsvp" method="POST" novalidate>
         <input type="hidden" name="form-name" value="rsvp" />
         <div class="form-group">
           <label for="rsvp-name">Full Name <span aria-hidden="true">*</span></label>
           <input id="rsvp-name" type="text" name="name" placeholder="Your full name" required />
+          <span class="form-error" role="alert"></span>
         </div>
         <div class="form-group">
           <label for="rsvp-email">Email Address</label>
           <input id="rsvp-email" type="email" name="email" placeholder="your@email.com" />
+          <span class="form-error" role="alert"></span>
         </div>
         <div class="form-group">
           <label for="rsvp-guests">Number of Guests <span aria-hidden="true">*</span></label>
@@ -230,15 +255,15 @@
           </select>
         </div>
         <div class="form-group">
-          <label>Attendance</label>
+          <label>Attendance <span aria-hidden="true">*</span></label>
           <div class="radio-group">
             <label class="radio-label">
               <input type="radio" name="attendance" value="attending" required />
-              <span>Joyfully Attending</span>
+              <span>Joyfully Attending 😊</span>
             </label>
             <label class="radio-label">
               <input type="radio" name="attendance" value="not-attending" />
-              <span>Regretfully Declining</span>
+              <span>Regretfully Declining 😢</span>
             </label>
           </div>
         </div>
@@ -249,7 +274,7 @@
         <button type="submit" class="btn-primary btn-full">Send RSVP</button>
       </form>
       <div id="rsvp-thankyou" class="rsvp-thankyou" hidden>
-        <div class="thankyou-icon">&#10084;</div>
+        <div class="thankyou-icon">❤️</div>
         <h3>Thank You!</h3>
         <p>We are so excited to celebrate with you. See you on our big day!</p>
       </div>
@@ -261,9 +286,9 @@
   ══════════════════════════════════════════════ -->
   <footer class="site-footer">
     <p class="footer-names">Nhân Quang <span>&amp;</span> Kim Oanh</p>
-    <p class="footer-date"><!-- WEDDING DATE --> [April 05, 2026]</p>
+    <p class="footer-date">April 05, 2026</p>
     <div class="footer-divider">&#10022;</div>
-    <p class="footer-copy">&copy; <span id="footer-year"></span> Made with &#10084; for our special day</p>
+    <p class="footer-copy">&copy; <span id="footer-year"></span> Made with ❤️ for our special day</p>
   </footer>
 
   <script src="script.js"></script>

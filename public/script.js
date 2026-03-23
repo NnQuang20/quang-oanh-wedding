@@ -1,27 +1,32 @@
 /* ══════════════════════════════════════════════════════════
-   WEDDING INVITATION — script.js
+   WEDDING INVITATION — PREMIUM EDITION
+   Enhanced functionality with lightbox, form validation,
+   and optimized performance
 ══════════════════════════════════════════════════════════ */
 
 /* ─────────────────────────────────────────────────────────
-   CONFIGURATION — update these values
+   CONFIGURATION
 ───────────────────────────────────────────────────────── */
-const WEDDING_DATE = new Date("2026-04-05T10:00:00"); // ← replace with actual date
+const WEDDING_DATE = new Date("2026-04-05T10:00:00");
+const WEDDING_LOCATION = "Thôn 3 Hạ Lôi, Mê Linh, Hà Nội, Việt Nam";
 
 /* ─────────────────────────────────────────────────────────
    LOADING SCREEN
 ───────────────────────────────────────────────────────── */
-const loadingScreen = document.getElementById("loading-screen");
+(function initLoadingScreen() {
+  const loadingScreen = document.getElementById("loading-screen");
 
-window.addEventListener("load", () => {
-  setTimeout(() => {
-    loadingScreen.classList.add("hidden");
-    loadingScreen.addEventListener(
-      "transitionend",
-      () => loadingScreen.remove(),
-      { once: true }
-    );
-  }, 1200);
-});
+  window.addEventListener("load", () => {
+    setTimeout(() => {
+      loadingScreen.classList.add("hidden");
+      loadingScreen.addEventListener(
+        "transitionend",
+        () => loadingScreen.remove(),
+        { once: true }
+      );
+    }, 1200);
+  });
+})();
 
 /* ─────────────────────────────────────────────────────────
    PARTICLES
@@ -104,7 +109,6 @@ window.addEventListener("load", () => {
       p.y += p.vy;
       p.x += p.vx;
 
-      // Reset when off screen
       if (p.y < -20) {
         p.y = H + 20;
         p.x = Math.random() * W;
@@ -143,7 +147,7 @@ window.addEventListener("load", () => {
       if (rect.bottom < 0 || rect.top > viewH) return;
 
       const progress = (viewH - rect.top) / (viewH + rect.height);
-      const offset = (progress - 0.5) * 80; // px shift range
+      const offset = (progress - 0.5) * 80;
       bg.style.transform = `translateY(${offset}px)`;
     });
   }
@@ -153,7 +157,7 @@ window.addEventListener("load", () => {
 })();
 
 /* ─────────────────────────────────────────────────────────
-   SCROLL FADE  (IntersectionObserver)
+   SCROLL FADE (IntersectionObserver)
 ───────────────────────────────────────────────────────── */
 (function initScrollFade() {
   const observer = new IntersectionObserver(
@@ -169,6 +173,88 @@ window.addEventListener("load", () => {
   );
 
   document.querySelectorAll(".scroll-fade").forEach((el) => observer.observe(el));
+})();
+
+/* ─────────────────────────────────────────────────────────
+   GALLERY LIGHTBOX
+───────────────────────────────────────────────────────── */
+(function initGalleryLightbox() {
+  const modal = document.getElementById("lightbox-modal");
+  const image = document.getElementById("lightbox-image");
+  const closeBtn = document.querySelector(".lightbox-close");
+  const prevBtn = document.querySelector(".lightbox-prev");
+  const nextBtn = document.querySelector(".lightbox-next");
+  const currentSpan = document.getElementById("lightbox-current");
+  const totalSpan = document.getElementById("lightbox-total");
+  const galleryItems = document.querySelectorAll(".gallery-item");
+
+  let currentIndex = 0;
+  const totalItems = galleryItems.length;
+
+  if (totalSpan) totalSpan.textContent = totalItems;
+
+  function open(index) {
+    currentIndex = index;
+    const img = galleryItems[index].querySelector("img");
+    image.src = img.src;
+    image.alt = img.alt;
+    currentSpan.textContent = index + 1;
+    modal.classList.add("active");
+    modal.setAttribute("aria-hidden", "false");
+    document.body.style.overflow = "hidden";
+  }
+
+  function close() {
+    modal.classList.remove("active");
+    modal.setAttribute("aria-hidden", "true");
+    document.body.style.overflow = "";
+  }
+
+  function next() {
+    open((currentIndex + 1) % totalItems);
+  }
+
+  function prev() {
+    open((currentIndex - 1 + totalItems) % totalItems);
+  }
+
+  // Gallery item click
+  galleryItems.forEach((item, index) => {
+    item.addEventListener("click", () => open(index));
+  });
+
+  // Modal controls
+  closeBtn.addEventListener("click", close);
+  prevBtn.addEventListener("click", prev);
+  nextBtn.addEventListener("click", next);
+
+  // Keyboard navigation
+  document.addEventListener("keydown", (e) => {
+    if (modal.classList.contains("active")) {
+      if (e.key === "Escape") close();
+      if (e.key === "ArrowRight") next();
+      if (e.key === "ArrowLeft") prev();
+    }
+  });
+
+  // Swipe support
+  let touchStartX = 0;
+  modal.addEventListener("touchstart", (e) => {
+    touchStartX = e.touches[0].clientX;
+  });
+
+  modal.addEventListener("touchend", (e) => {
+    const touchEndX = e.changedTouches[0].clientX;
+    const diff = touchStartX - touchEndX;
+    if (Math.abs(diff) > 50) {
+      diff > 0 ? next() : prev();
+    }
+  });
+
+  // Close on background click
+  modal.addEventListener("click", (e) => {
+    if (e.target === modal) close();
+  });
 })();
 
 /* ─────────────────────────────────────────────────────────
@@ -192,15 +278,15 @@ window.addEventListener("load", () => {
       return;
     }
 
-    const days  = Math.floor(diff / 86400000);
+    const days = Math.floor(diff / 86400000);
     const hours = Math.floor((diff % 86400000) / 3600000);
-    const mins  = Math.floor((diff % 3600000)  / 60000);
-    const secs  = Math.floor((diff % 60000)    / 1000);
+    const mins = Math.floor((diff % 3600000) / 60000);
+    const secs = Math.floor((diff % 60000) / 1000);
 
-    daysEl.textContent  = pad(days);
+    daysEl.textContent = pad(days);
     hoursEl.textContent = pad(hours);
-    minsEl.textContent  = pad(mins);
-    secsEl.textContent  = pad(secs);
+    minsEl.textContent = pad(mins);
+    secsEl.textContent = pad(secs);
   }
 
   tick();
@@ -211,16 +297,16 @@ window.addEventListener("load", () => {
    MUSIC TOGGLE
 ───────────────────────────────────────────────────────── */
 (function initMusic() {
-  const btn       = document.getElementById("music-toggle");
-  const audio     = document.getElementById("bg-music");
-  const iconOn    = document.getElementById("music-icon-on");
-  const iconOff   = document.getElementById("music-icon-off");
+  const btn = document.getElementById("music-toggle");
+  const audio = document.getElementById("bg-music");
+  const iconOn = document.getElementById("music-icon-on");
+  const iconOff = document.getElementById("music-icon-off");
   let playing = false;
 
   btn.addEventListener("click", () => {
     if (playing) {
       audio.pause();
-      iconOn.style.display  = "block";
+      iconOn.style.display = "block";
       iconOff.style.display = "none";
       btn.classList.remove("playing");
       btn.setAttribute("aria-label", "Play background music");
@@ -228,7 +314,7 @@ window.addEventListener("load", () => {
       audio.play().catch(() => {
         /* autoplay blocked — user must interact again */
       });
-      iconOn.style.display  = "none";
+      iconOn.style.display = "none";
       iconOff.style.display = "block";
       btn.classList.add("playing");
       btn.setAttribute("aria-label", "Pause background music");
@@ -238,15 +324,18 @@ window.addEventListener("load", () => {
 })();
 
 /* ─────────────────────────────────────────────────────────
-   BACK TO TOP
+   BACK TO TOP & STICKY CTA
 ───────────────────────────────────────────────────────── */
 (function initBackToTop() {
   const btn = document.getElementById("back-to-top");
+  const stickyCta = document.getElementById("sticky-cta");
 
   window.addEventListener(
     "scroll",
     () => {
-      btn.classList.toggle("visible", window.scrollY > 400);
+      const isVisible = window.scrollY > 400;
+      btn.classList.toggle("visible", isVisible);
+      stickyCta.classList.toggle("visible", isVisible);
     },
     { passive: true }
   );
@@ -257,28 +346,101 @@ window.addEventListener("load", () => {
 })();
 
 /* ─────────────────────────────────────────────────────────
-   RSVP FORM
+   ADD TO CALENDAR
+───────────────────────────────────────────────────────── */
+(function initAddToCalendar() {
+  const btn = document.getElementById("add-to-cal");
+  if (!btn) return;
+
+  btn.addEventListener("click", (e) => {
+    e.preventDefault();
+    const event = {
+      title: "Nhân Quang & Kim Oanh's Wedding",
+      description: "Join us for our wedding celebration",
+      location: WEDDING_LOCATION,
+      startDate: "20260405T100000",
+      endDate: "20260405T230000",
+    };
+
+    // Google Calendar URL
+    const googleCalendarUrl = [
+      "https://calendar.google.com/calendar/render?action=TEMPLATE",
+      `&text=${encodeURIComponent(event.title)}`,
+      `&dates=20260405T100000/20260405T230000`,
+      `&details=${encodeURIComponent(event.description)}`,
+      `&location=${encodeURIComponent(event.location)}`,
+      "&ctz=UTC",
+    ].join("");
+
+    window.open(googleCalendarUrl, "_blank");
+  });
+})();
+
+/* ─────────────────────────────────────────────────────────
+   RSVP FORM VALIDATION & SUBMISSION
 ───────────────────────────────────────────────────────── */
 (function initRSVP() {
-  const form      = document.getElementById("rsvp-form");
-  const thankyou  = document.getElementById("rsvp-thankyou");
+  const form = document.getElementById("rsvp-form");
+  const thankyou = document.getElementById("rsvp-thankyou");
 
   if (!form) return;
+
+  // Real-time field validation
+  const nameInput = document.getElementById("rsvp-name");
+  const emailInput = document.getElementById("rsvp-email");
+
+  function validateField(field) {
+    const group = field.closest(".form-group");
+    const errorEl = group.querySelector(".form-error");
+    let isValid = true;
+    let message = "";
+
+    if (field.id === "rsvp-name") {
+      isValid = field.value.trim().length >= 2;
+      message = "Name must be at least 2 characters";
+    } else if (field.id === "rsvp-email" && field.value) {
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      isValid = emailRegex.test(field.value);
+      message = "Please enter a valid email address";
+    }
+
+    if (!isValid) {
+      group.classList.add("invalid");
+      field.classList.add("error");
+      if (errorEl) errorEl.textContent = message;
+    } else {
+      group.classList.remove("invalid");
+      field.classList.remove("error");
+      if (errorEl) errorEl.textContent = "";
+    }
+
+    return isValid;
+  }
+
+  nameInput.addEventListener("blur", () => validateField(nameInput));
+  emailInput.addEventListener("blur", () => validateField(emailInput));
 
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
 
-    // Basic validation
+    // Validate all required fields
+    let isFormValid = true;
+
     if (!form.name.value.trim()) {
-      form.name.focus();
-      return;
-    }
-    if (!form.attendance.value) {
-      alert("Please select your attendance.");
-      return;
+      const nameGroup = nameInput.closest(".form-group");
+      nameGroup.classList.add("invalid");
+      nameInput.classList.add("error");
+      isFormValid = false;
     }
 
-    // Attempt Netlify Forms submission
+    if (!form.attendance.value) {
+      alert("Please select your attendance.");
+      isFormValid = false;
+    }
+
+    if (!isFormValid) return;
+
+    // Submit form
     const body = new URLSearchParams(new FormData(form)).toString();
 
     try {
@@ -291,7 +453,6 @@ window.addEventListener("load", () => {
       if (res.ok || res.status === 200) {
         showThankYou();
       } else {
-        // Fallback: show thank you anyway (local dev / non-Netlify)
         showThankYou();
       }
     } catch (_) {
@@ -309,5 +470,8 @@ window.addEventListener("load", () => {
 /* ─────────────────────────────────────────────────────────
    FOOTER YEAR
 ───────────────────────────────────────────────────────── */
-const yearEl = document.getElementById("footer-year");
-if (yearEl) yearEl.textContent = new Date().getFullYear();
+(function initFooter() {
+  const yearEl = document.getElementById("footer-year");
+  if (yearEl) yearEl.textContent = new Date().getFullYear();
+})();
+

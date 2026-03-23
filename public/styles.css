@@ -138,6 +138,7 @@ button {
   visibility: hidden;
   transition: opacity .3s ease, visibility .3s ease;
   padding: 20px;
+  backdrop-filter: blur(3px);
 }
 
 .lightbox-modal.active {
@@ -159,18 +160,12 @@ button {
   max-height: 85vh;
   object-fit: contain;
   border-radius: 4px;
-  animation: imageSlideIn .4s ease;
+  animation: slideIn .4s ease;
 }
 
-@keyframes imageSlideIn {
-  from { 
-    transform: translateX(40px); 
-    opacity: 0; 
-  }
-  to { 
-    transform: translateX(0); 
-    opacity: 1; 
-  }
+@keyframes slideIn {
+  from { transform: translateX(40px); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
 }
 
 .lightbox-close {
@@ -842,11 +837,13 @@ button {
 .countdown-number {
   display: block;
   font-family: var(--ff-serif);
-  font-size: clamp(2.4rem, 7vw, 3.5rem);
+  font-size: clamp(3.2rem, 9vw, 5rem);
   font-weight: 700;
   color: var(--clr-primary);
   line-height: 1;
   margin-bottom: 8px;
+  position: relative;
+  height: 1em;
 }
 
 .countdown-number.pulse {
@@ -859,17 +856,32 @@ button {
 }
 
 .countdown-number.float-down {
-  animation: float-down 1.2s ease-out forwards !important;
+  animation: float-down 1s ease-out forwards !important;
 }
 
 @keyframes float-down {
   0% {
     opacity: 1;
-    transform: translateY(-12px);
+    transform: translateY(0);
   }
   100% {
     opacity: 0;
-    transform: translateY(16px);
+    transform: translateY(60px);
+  }
+}
+
+.countdown-number.float-up {
+  animation: float-up 1s ease-out forwards !important;
+}
+
+@keyframes float-up {
+  0% {
+    opacity: 0;
+    transform: translateY(-60px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
   }
 }
 
@@ -1190,16 +1202,11 @@ button {
 }
 
 /* ── Staggered delay helpers ── */
-.scroll-fade:nth-child(1) { transition-delay: 0s; }
-.scroll-fade:nth-child(2) { transition-delay: .12s; }
-.scroll-fade:nth-child(3) { transition-delay: .24s; }
-.scroll-fade:nth-child(4) { transition-delay: .36s; }
-.scroll-fade:nth-child(5) { transition-delay: .48s; }
-.scroll-fade:nth-child(6) { transition-delay: .6s; }
-.scroll-fade:nth-child(7) { transition-delay: .72s; }
-.scroll-fade:nth-child(8) { transition-delay: .84s; }
-.scroll-fade:nth-child(9) { transition-delay: .96s; }
-.scroll-fade:nth-child(10) { transition-delay: 1.08s; }
+.scroll-fade:nth-child(2) { transition-delay: .1s; }
+.scroll-fade:nth-child(3) { transition-delay: .2s; }
+.scroll-fade:nth-child(4) { transition-delay: .3s; }
+.scroll-fade:nth-child(5) { transition-delay: .4s; }
+.scroll-fade:nth-child(6) { transition-delay: .5s; }
 
 /* ── Hero animations ── */
 .animate-fade-up {
@@ -1207,6 +1214,14 @@ button {
   transform: translateY(28px);
   animation: fadeUp .9s ease forwards;
 }
+
+.animate-fade-up:nth-of-type(1) { animation-delay: .15s; }
+.animate-fade-up:nth-of-type(2) { animation-delay: .3s; }
+.animate-fade-up:nth-of-type(3) { animation-delay: .45s; }
+.animate-fade-up:nth-of-type(4) { animation-delay: .6s; }
+.animate-fade-up:nth-of-type(5) { animation-delay: .75s; }
+.animate-fade-up:nth-of-type(6) { animation-delay: .9s; }
+.animate-fade-up:nth-of-type(7) { animation-delay: 1.05s; }
 
 @keyframes fadeUp {
   to { 
@@ -1914,16 +1929,11 @@ textarea {
 }
 
 /* ── Scroll-delay helpers ── */
-.scroll-fade:nth-child(1) { transition-delay: 0s; }
-.scroll-fade:nth-child(2) { transition-delay: .12s; }
-.scroll-fade:nth-child(3) { transition-delay: .24s; }
-.scroll-fade:nth-child(4) { transition-delay: .36s; }
-.scroll-fade:nth-child(5) { transition-delay: .48s; }
-.scroll-fade:nth-child(6) { transition-delay: .6s; }
-.scroll-fade:nth-child(7) { transition-delay: .72s; }
-.scroll-fade:nth-child(8) { transition-delay: .84s; }
-.scroll-fade:nth-child(9) { transition-delay: .96s; }
-.scroll-fade:nth-child(10) { transition-delay: 1.08s; }
+.scroll-fade:nth-child(2) { transition-delay: .1s; }
+.scroll-fade:nth-child(3) { transition-delay: .2s; }
+.scroll-fade:nth-child(4) { transition-delay: .3s; }
+.scroll-fade:nth-child(5) { transition-delay: .4s; }
+.scroll-fade:nth-child(6) { transition-delay: .5s; }
 
 /* ── Focus visible ── */
 :focus-visible { outline: 2px solid var(--clr-primary); outline-offset: 3px; }

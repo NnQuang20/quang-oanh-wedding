@@ -292,11 +292,21 @@ const WEDDING_LOCATION = "Thôn 3 Hạ Lôi, Mê Linh, Hà Nội, Việt Nam";
 
   function animateNumberChange(el, newValue) {
     if (el.textContent !== newValue) {
-      el.classList.add("float-down");
+      // Remove any existing animations
+      el.classList.remove("float-down", "float-up", "pulse");
+      
+      // Create a temporary clone to show the floating out animation
+      const clone = el.cloneNode(true);
+      clone.classList.remove("pulse");
+      clone.classList.add("float-down");
+      el.parentNode.insertBefore(clone, el);
+      
+      // Update the main element after a brief delay
       setTimeout(() => {
         el.textContent = newValue;
-        el.classList.remove("float-down");
-      }, 600);
+        el.classList.add("float-up", "pulse");
+        clone.remove();
+      }, 100);
     }
   }
 

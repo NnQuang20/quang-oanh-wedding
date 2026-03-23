@@ -220,7 +220,7 @@ const WEDDING_LOCATION = "Thôn 3 Hạ Lôi, Mê Linh, Hà Nội, Việt Nam";
     img.id = className === "current" ? "lightbox-image" : "lightbox-image-next";
     img.className = `lightbox-image ${className}`;
     img.src = src;
-    img.alt = alt;
+    img.alt = "";
     return img;
   }
 

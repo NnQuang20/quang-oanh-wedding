@@ -216,8 +216,19 @@ const WEDDING_LOCATION = "Thôn 3 Hạ Lôi, Mê Linh, Hà Nội, Việt Nam";
   function open(index) {
     currentIndex = index;
     const img = galleryItems[index].querySelector("img");
-    image.src = img.src;
-    image.alt = img.alt;
+    
+    // Fade out current image
+    image.classList.add("fade-out");
+    
+    // Wait for fade out, then update image and fade in
+    setTimeout(() => {
+      image.src = img.src;
+      image.alt = img.alt;
+      image.classList.remove("fade-out");
+      image.classList.add("fade-in");
+      setTimeout(() => image.classList.remove("fade-in"), 400);
+    }, 200);
+    
     currentSpan.textContent = index + 1;
     modal.classList.add("active");
     modal.setAttribute("aria-hidden", "false");
@@ -290,11 +301,24 @@ const WEDDING_LOCATION = "Thôn 3 Hạ Lôi, Mê Linh, Hà Nội, Việt Nam";
     return String(Math.max(0, n)).padStart(2, "0");
   }
 
+  function animateNumberChange(el, newValue) {
+    if (el.textContent !== newValue) {
+      el.classList.add("float-down");
+      setTimeout(() => {
+        el.textContent = newValue;
+        el.classList.remove("float-down");
+      }, 250);
+    }
+  }
+
   function tick() {
     const diff = WEDDING_DATE - Date.now();
 
     if (diff <= 0) {
-      daysEl.textContent = hoursEl.textContent = minsEl.textContent = secsEl.textContent = "00";
+      animateNumberChange(daysEl, "00");
+      animateNumberChange(hoursEl, "00");
+      animateNumberChange(minsEl, "00");
+      animateNumberChange(secsEl, "00");
       return;
     }
 
@@ -303,10 +327,10 @@ const WEDDING_LOCATION = "Thôn 3 Hạ Lôi, Mê Linh, Hà Nội, Việt Nam";
     const mins = Math.floor((diff % 3600000) / 60000);
     const secs = Math.floor((diff % 60000) / 1000);
 
-    daysEl.textContent = pad(days);
-    hoursEl.textContent = pad(hours);
-    minsEl.textContent = pad(mins);
-    secsEl.textContent = pad(secs);
+    animateNumberChange(daysEl, pad(days));
+    animateNumberChange(hoursEl, pad(hours));
+    animateNumberChange(minsEl, pad(mins));
+    animateNumberChange(secsEl, pad(secs));
   }
 
   tick();

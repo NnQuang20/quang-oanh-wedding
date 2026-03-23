@@ -160,6 +160,15 @@ button {
   object-fit: contain;
   border-radius: 4px;
   animation: zoomIn .3s ease;
+  transition: opacity .4s ease;
+}
+
+#lightbox-image.fade-out {
+  opacity: 0;
+}
+
+#lightbox-image.fade-in {
+  animation: none;
 }
 
 @keyframes zoomIn {
@@ -852,6 +861,21 @@ button {
   50% { transform: scale(1.05); }
 }
 
+.countdown-number.float-down {
+  animation: float-down .5s ease-out forwards !important;
+}
+
+@keyframes float-down {
+  0% {
+    opacity: 1;
+    transform: translateY(-8px);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+}
+
 .countdown-label {
   font-size: .75rem;
   letter-spacing: .2em;
@@ -1434,6 +1458,11 @@ textarea {
 .ampersand {
   font-style: italic;
   color: var(--clr-accent);
+}
+
+.hero-title-line {
+  display: inline-block;
+  animation: fadeUp .9s ease backwards;
 }
 
 .hero-divider {

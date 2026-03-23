@@ -147,21 +147,25 @@ button {
 
 .lightbox-container {
   position: relative;
-  max-width: 90vw;
-  max-height: 85vh;
+  width: 90vw;
+  height: 85vh;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
+.lightbox-image-wrapper {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
 .lightbox-image {
   width: 100%;
   height: 100%;
-  max-width: 100%;
-  max-height: 85vh;
   object-fit: contain;
   border-radius: 4px;
-  /* Ensure consistent transform (keep scale locked) to avoid shrink during animation */
   transform: translateX(0) scale(1);
   transform-origin: center;
   will-change: transform, opacity;
@@ -170,13 +174,13 @@ button {
   display: block;
 }
 
-#lightbox-image {
+.lightbox-image.current {
   position: relative;
   width: 100%;
   height: 100%;
 }
 
-#lightbox-image-next {
+.lightbox-image.next {
   position: absolute;
   inset: 0;
   width: 100%;
@@ -184,7 +188,7 @@ button {
 }
 
 /* ── Initial Load Animation ── */
-#lightbox-image:not(.next) {
+.lightbox-image.wipe-in {
   animation: wipeIn .6s cubic-bezier(.22, 1, .36, 1);
 }
 
@@ -194,27 +198,25 @@ button {
 }
 
 /* ── Direction-aware Slide Animations ── */
-.lightbox-container.animate.slide-left .lightbox-image.current {
+.lightbox-image-wrapper.animate.slide-left .lightbox-image.current {
   animation: slideOutLeft .6s cubic-bezier(.22, 1, .36, 1) forwards;
 }
 
-.lightbox-container.animate.slide-left .lightbox-image.next {
+.lightbox-image-wrapper.animate.slide-left .lightbox-image.next {
   animation: slideInFromRight .6s cubic-bezier(.22, 1, .36, 1) forwards;
 }
 
-.lightbox-container.animate.slide-right .lightbox-image.current {
+.lightbox-image-wrapper.animate.slide-right .lightbox-image.current {
   animation: slideOutRight .6s cubic-bezier(.22, 1, .36, 1) forwards;
 }
 
-.lightbox-container.animate.slide-right .lightbox-image.next {
+.lightbox-image-wrapper.animate.slide-right .lightbox-image.next {
   animation: slideInFromLeft .6s cubic-bezier(.22, 1, .36, 1) forwards;
 }
 
 /* Keep scale explicitly set on animated images and declare will-change/backface for reliability */
-.lightbox-container.animate.slide-left .lightbox-image.current,
-.lightbox-container.animate.slide-right .lightbox-image.current,
-.lightbox-container.animate.slide-left .lightbox-image.next,
-.lightbox-container.animate.slide-right .lightbox-image.next,
+.lightbox-image-wrapper.animate .lightbox-image.current,
+.lightbox-image-wrapper.animate .lightbox-image.next,
 .lightbox-image.current,
 .lightbox-image.next {
   transform: translateX(0) scale(1);
@@ -331,7 +333,7 @@ button {
     flex-direction: column;
   }
 
-  #lightbox-image {
+  .lightbox-image.current {
     max-height: 60vh;
   }
 }

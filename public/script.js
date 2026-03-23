@@ -237,6 +237,11 @@ const WEDDING_LOCATION = "Thôn 3 Hạ Lôi, Mê Linh, Hà Nội, Việt Nam";
     const currentImg = container.querySelector(".lightbox-image.current");
     const newImg = galleryItems[newIndex].querySelector("img");
 
+    if (!currentImg || !newImg) {
+      isAnimating = false;
+      return;
+    }
+
     // Create next image element
     const nextImg = createImageElement(newImg.src, newImg.alt, "next");
     container.appendChild(nextImg);
@@ -244,7 +249,7 @@ const WEDDING_LOCATION = "Thôn 3 Hạ Lôi, Mê Linh, Hà Nội, Việt Nam";
     // Force reflow
     void container.offsetHeight;
 
-    // Add animation class to container (with direction)
+    // Add animation class to container (with direction) - ONLY animate images, not container
     container.classList.add("animate", `slide-${direction}`);
 
     // Animation end handler
@@ -258,10 +263,19 @@ const WEDDING_LOCATION = "Thôn 3 Hạ Lôi, Mê Linh, Hà Nội, Việt Nam";
       // Clear safety timeout
       if (timeoutId) clearTimeout(timeoutId);
 
+      // Remove animation classes from container ONLY
       container.classList.remove("animate", `slide-${direction}`);
-      if (currentImg && currentImg.parentElement) currentImg.remove();
+
+      // Remove ONLY the old current image
+      if (currentImg && currentImg.parentElement) {
+        currentImg.remove();
+      }
+
+      // Promote next to current
       nextImg.classList.remove("next");
       nextImg.classList.add("current");
+
+      // Update state
       currentIndex = newIndex;
       if (currentSpan) currentSpan.textContent = newIndex + 1;
       isAnimating = false;
@@ -279,9 +293,9 @@ const WEDDING_LOCATION = "Thôn 3 Hạ Lôi, Mê Linh, Hà Nội, Việt Nam";
       }
     }
 
-    // Listen for animationend on both images
-    nextImg.addEventListener("animationend", onAnimEnd, { once: true });
-    if (currentImg) currentImg.addEventListener("animationend", onAnimEnd, { once: true });
+    // Listen for animationend on both images with capture phase for reliability
+    nextImg.addEventListener("animationend", onAnimEnd, { once: true, capture: true });
+    if (currentImg) currentImg.addEventListener("animationend", onAnimEnd, { once: true, capture: true });
 
     // Safety timeout as fallback (600ms animation + 100ms buffer)
     timeoutId = setTimeout(() => {
@@ -299,13 +313,18 @@ const WEDDING_LOCATION = "Thôn 3 Hạ Lôi, Mê Linh, Hà Nội, Việt Nam";
 
       // Remove listeners
       try {
-        nextImg.removeEventListener("animationend", onAnimEnd);
-        if (currentImg) currentImg.removeEventListener("animationend", onAnimEnd);
+        nextImg.removeEventListener("animationend", onAnimEnd, true);
+        if (currentImg) currentImg.removeEventListener("animationend", onAnimEnd, true);
       } catch (_) {}
 
-      // Remove animation classes and orphaned next image
+      // Remove animation classes from container ONLY
       container.classList.remove("animate", `slide-${direction}`);
-      if (nextImg && nextImg.parentElement) nextImg.remove();
+
+      // Remove ONLY the orphaned next image
+      if (nextImg && nextImg.parentElement) {
+        nextImg.remove();
+      }
+
       isAnimating = false;
       currentAnimationCleanup = null;
     };
@@ -315,39 +334,47 @@ const WEDDING_LOCATION = "Thôn 3 Hạ Lôi, Mê Linh, Hà Nội, Việt Nam";
     // Clamp index to valid range
     index = Math.max(0, Math.min(index, totalItems - 1));
 
-    // If modal is not currently active, reset container and any running animation
+    // If modal is not currently active, this is a fresh open
     if (!modal.classList.contains("active")) {
+      // Clean up any orphaned animation state
       if (currentAnimationCleanup) {
         try { currentAnimationCleanup(); } catch (_) {}
         currentAnimationCleanup = null;
       }
       isAnimating = false;
       container.classList.remove("animate", "slide-left", "slide-right");
-      container.innerHTML = ""; // ensure clean DOM
-      currentIndex = 0; // reset index
-    } else {
-      // if modal already active and requesting same index, noop
-      if (index === currentIndex && currentSpan && currentSpan.textContent === String(index + 1)) {
-        return;
-      }
-    }
+      
+      // Clear container only when opening from closed state
+      const allImages = container.querySelectorAll(".lightbox-image");
+      allImages.forEach(img => img.remove());
 
-    const img = galleryItems[index].querySelector("img");
-    if (!img) return;
+      currentIndex = 0;
 
-    // First load - no animation
-    if (!container.querySelector(".lightbox-image")) {
+      const img = galleryItems[index].querySelector("img");
+      if (!img) return;
+
+      // Insert first image
       const firstImg = createImageElement(img.src, img.alt, "current");
       container.appendChild(firstImg);
       currentIndex = index;
       if (currentSpan) currentSpan.textContent = index + 1;
+
+      // Open modal
       modal.classList.add("active");
       modal.setAttribute("aria-hidden", "false");
       document.body.style.overflow = "hidden";
       return;
     }
 
-    // Determine direction
+    // Modal is already open - check if same index
+    if (index === currentIndex && currentSpan && currentSpan.textContent === String(index + 1)) {
+      return;
+    }
+
+    // Navigate to different image
+    const img = galleryItems[index].querySelector("img");
+    if (!img) return;
+
     const direction = index > currentIndex ? "left" : "right";
     slideToImage(index, direction);
   }
@@ -361,16 +388,17 @@ const WEDDING_LOCATION = "Thôn 3 Hạ Lôi, Mê Linh, Hà Nội, Việt Nam";
       currentAnimationCleanup = null;
     }
 
-    // Force reset state
+    // Force reset animation state
     isAnimating = false;
 
-    // Remove all animation classes
+    // Remove all animation classes from container
     container.classList.remove("animate", "slide-left", "slide-right");
 
-    // Clear container completely to ensure no orphaned images
-    container.innerHTML = "";
+    // Remove all image elements from container
+    const allImages = container.querySelectorAll(".lightbox-image");
+    allImages.forEach(img => img.remove());
 
-    // Close modal
+    // Close modal - this is the ONLY place where modal visibility changes
     modal.classList.remove("active");
     modal.setAttribute("aria-hidden", "true");
     document.body.style.overflow = "";

@@ -420,6 +420,7 @@ button {
   will-change: transform;
   z-index: 0;
   transform: translateZ(0);
+  filter: blur(2px);
 }
 
 .parallax-bg--dim::after {
@@ -948,6 +949,10 @@ button {
   font-style: italic;
 }
 
+.map-address-text {
+  color: #000 !important;
+}
+
 .map-actions {
   display: flex;
   gap: 12px;
@@ -1067,8 +1072,21 @@ button {
   height: 18px;
   accent-color: var(--clr-primary);
   padding: 0;
-  border: none;
+  border: 2px solid var(--clr-accent);
   flex-shrink: 0;
+  cursor: pointer;
+  transition: all .3s ease;
+}
+
+.radio-label input[type="radio"]:checked {
+  accent-color: var(--clr-primary);
+  border-color: var(--clr-primary);
+  box-shadow: 0 0 0 2px var(--clr-primary-dk);
+}
+
+.radio-label input[type="radio"]:focus-visible {
+  outline: 2px solid var(--clr-primary);
+  outline-offset: 2px;
 }
 
 .rsvp-thankyou {
@@ -1224,7 +1242,7 @@ textarea {
   position: fixed;
   inset: 0;
   pointer-events: none;
-  z-index: 0;
+  z-index: 5;
   opacity: .55;
 }
 
@@ -1352,6 +1370,8 @@ textarea {
   background-position: center;
   will-change: transform;
   z-index: 0;
+  transform: translateZ(0);
+  filter: blur(2px);
 }
 .parallax-bg--dim::after {
   content: "";
@@ -1774,8 +1794,19 @@ textarea {
   height: 18px;
   accent-color: var(--clr-primary);
   padding: 0;
-  border: none;
+  border: 2px solid var(--clr-accent);
   flex-shrink: 0;
+  cursor: pointer;
+  transition: all .3s ease;
+}
+.radio-label input[type="radio"]:checked {
+  accent-color: var(--clr-primary);
+  border-color: var(--clr-primary);
+  box-shadow: 0 0 0 2px var(--clr-primary-dk);
+}
+.radio-label input[type="radio"]:focus-visible {
+  outline: 2px solid var(--clr-primary);
+  outline-offset: 2px;
 }
 
 .rsvp-thankyou {

@@ -11,10 +11,30 @@ const WEDDING_DATE = new Date("2026-04-05T10:00:00");
 const WEDDING_LOCATION = "Thôn 3 Hạ Lôi, Mê Linh, Hà Nội, Việt Nam";
 
 /* ─────────────────────────────────────────────────────────
-   LOADING SCREEN
+   LOADING & PERFORMANCE OPTIMIZATION
 ───────────────────────────────────────────────────────── */
 (function initLoadingScreen() {
   const loadingScreen = document.getElementById("loading-screen");
+
+  // Preload critical images
+  const criticalImages = [
+    "assets/cover.jpg",
+    "assets/couple.jpg",
+  ];
+
+  let loadedCount = 0;
+  const totalImages = criticalImages.length;
+
+  criticalImages.forEach((src) => {
+    const img = new Image();
+    img.onload = () => {
+      loadedCount++;
+    };
+    img.onerror = () => {
+      loadedCount++;
+    };
+    img.src = src;
+  });
 
   window.addEventListener("load", () => {
     setTimeout(() => {
@@ -24,7 +44,7 @@ const WEDDING_LOCATION = "Thôn 3 Hạ Lôi, Mê Linh, Hà Nội, Việt Nam";
         () => loadingScreen.remove(),
         { once: true }
       );
-    }, 1200);
+    }, 800);
   });
 })();
 
@@ -157,7 +177,7 @@ const WEDDING_LOCATION = "Thôn 3 Hạ Lôi, Mê Linh, Hà Nội, Việt Nam";
 })();
 
 /* ─────────────────────────────────────────────────────────
-   SCROLL FADE (IntersectionObserver)
+   SCROLL FADE (IntersectionObserver) — Premium Timing
 ───────────────────────────────────────────────────────── */
 (function initScrollFade() {
   const observer = new IntersectionObserver(
@@ -169,7 +189,7 @@ const WEDDING_LOCATION = "Thôn 3 Hạ Lôi, Mê Linh, Hà Nội, Việt Nam";
         }
       });
     },
-    { threshold: 0.12, rootMargin: "0px 0px -40px 0px" }
+    { threshold: 0.15, rootMargin: "0px 0px -60px 0px" }
   );
 
   document.querySelectorAll(".scroll-fade").forEach((el) => observer.observe(el));
@@ -294,7 +314,7 @@ const WEDDING_LOCATION = "Thôn 3 Hạ Lôi, Mê Linh, Hà Nội, Việt Nam";
 })();
 
 /* ─────────────────────────────────────────────────────────
-   MUSIC TOGGLE
+   MUSIC TOGGLE — Smart Autoplay with Browser Policy Handling
 ───────────────────────────────────────────────────────── */
 (function initMusic() {
   const btn = document.getElementById("music-toggle");
@@ -302,8 +322,10 @@ const WEDDING_LOCATION = "Thôn 3 Hạ Lôi, Mê Linh, Hà Nội, Việt Nam";
   const iconOn = document.getElementById("music-icon-on");
   const iconOff = document.getElementById("music-icon-off");
   let playing = false;
+  let autoplayAttempted = false;
 
-  btn.addEventListener("click", () => {
+  // Function to toggle music
+  function toggleMusic() {
     if (playing) {
       audio.pause();
       iconOn.style.display = "block";
@@ -312,7 +334,7 @@ const WEDDING_LOCATION = "Thôn 3 Hạ Lôi, Mê Linh, Hà Nội, Việt Nam";
       btn.setAttribute("aria-label", "Play background music");
     } else {
       audio.play().catch(() => {
-        /* autoplay blocked — user must interact again */
+        /* autoplay blocked — browser policy prevents it */
       });
       iconOn.style.display = "none";
       iconOff.style.display = "block";
@@ -320,7 +342,38 @@ const WEDDING_LOCATION = "Thôn 3 Hạ Lôi, Mê Linh, Hà Nội, Việt Nam";
       btn.setAttribute("aria-label", "Pause background music");
     }
     playing = !playing;
-  });
+  }
+
+  // Handle button click
+  btn.addEventListener("click", toggleMusic);
+
+  // Attempt autoplay on first user interaction (respects browser policies)
+  function attemptAutoplay() {
+    if (!autoplayAttempted) {
+      autoplayAttempted = true;
+      const playPromise = audio.play();
+      if (playPromise !== undefined) {
+        playPromise
+          .then(() => {
+            // Autoplay succeeded
+            playing = true;
+            iconOn.style.display = "none";
+            iconOff.style.display = "block";
+            btn.classList.add("playing");
+            document.removeEventListener("click", attemptAutoplay);
+            document.removeEventListener("scroll", attemptAutoplay);
+          })
+          .catch(() => {
+            /* Autoplay blocked by browser — user must click button */
+            autoplayAttempted = false;
+          });
+      }
+    }
+  }
+
+  // Try to autoplay on first user interaction
+  document.addEventListener("click", attemptAutoplay, { once: true });
+  document.addEventListener("scroll", attemptAutoplay, { once: true, passive: true });
 })();
 
 /* ─────────────────────────────────────────────────────────

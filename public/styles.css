@@ -28,7 +28,7 @@
   --shadow-lg: 0 20px 60px rgba(58,46,38,.18);
 
   --radius: 12px;
-  --transition: .4s cubic-bezier(.25,.8,.25,1);
+  --transition: .4s cubic-bezier(.22, 1, .36, 1);
 }
 
 /* ── Global Reset ── */
@@ -409,6 +409,7 @@ button {
 .parallax-section {
   position: relative;
   overflow: hidden;
+  contain: layout style paint;
 }
 
 .parallax-bg {
@@ -418,6 +419,7 @@ button {
   background-position: center;
   will-change: transform;
   z-index: 0;
+  transform: translateZ(0);
 }
 
 .parallax-bg--dim::after {
@@ -429,12 +431,12 @@ button {
 
 /* ── Hero Zoom Animation ── */
 .hero-bg-zoom {
-  animation: heroZoom 12s ease-in-out forwards;
+  animation: heroZoom 18s ease-out forwards;
 }
 
 @keyframes heroZoom {
   from { transform: scale(1); }
-  to { transform: scale(1.08); }
+  to { transform: scale(1.12); }
 }
 
 /* ════════════════════════════════
@@ -583,12 +585,29 @@ button {
   border-radius: 40px;
   box-shadow: var(--shadow-sm);
   transition: background var(--transition), transform var(--transition), box-shadow var(--transition);
+  will-change: transform;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-primary::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: rgba(255, 255, 255, .1);
+  opacity: 0;
+  transition: opacity .3s ease;
 }
 
 .btn-primary:hover {
   background: var(--clr-primary-dk);
   transform: translateY(-3px);
   box-shadow: var(--shadow-md);
+}
+
+.btn-primary:active {
+  transform: translateY(-1px);
 }
 
 .btn-secondary {
@@ -805,6 +824,7 @@ button {
   text-align: center;
   border: 1px solid var(--clr-accent-lt);
   transition: transform .3s ease, box-shadow .3s ease;
+  will-change: transform;
 }
 
 .countdown-item:hover {
@@ -861,6 +881,7 @@ button {
   cursor: pointer;
   transition: transform .3s ease, box-shadow .3s ease;
   background: var(--clr-bg-dark);
+  will-change: transform;
 }
 
 .gallery-item:hover {
@@ -1165,6 +1186,24 @@ button {
 :focus-visible { 
   outline: 2px solid var(--clr-primary); 
   outline-offset: 3px; 
+}
+
+/* Touch feedback for mobile */
+button,
+a,
+input,
+select,
+textarea {
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+input,
+select,
+textarea {
+  -webkit-user-select: text;
+  user-select: text;
 }
 
 /* ── Reduced Motion ── */

@@ -159,7 +159,10 @@ button {
   max-height: 85vh;
   object-fit: contain;
   border-radius: 4px;
+  /* Ensure consistent transform (keep scale locked) to avoid shrink during animation */
+  transform: translateX(0) scale(1);
   will-change: transform, opacity;
+  backface-visibility: hidden;
 }
 
 #lightbox-image {
@@ -196,6 +199,18 @@ button {
 
 .lightbox-container.animate.slide-right .lightbox-image.next {
   animation: slideInFromLeft .6s cubic-bezier(.22, 1, .36, 1) forwards;
+}
+
+/* Keep scale explicitly set on animated images and declare will-change/backface for reliability */
+.lightbox-container.animate.slide-left .lightbox-image.current,
+.lightbox-container.animate.slide-right .lightbox-image.current,
+.lightbox-container.animate.slide-left .lightbox-image.next,
+.lightbox-container.animate.slide-right .lightbox-image.next,
+.lightbox-image.current,
+.lightbox-image.next {
+  transform: translateX(0) scale(1);
+  will-change: transform, opacity;
+  backface-visibility: hidden;
 }
 
 @keyframes slideOutLeft {

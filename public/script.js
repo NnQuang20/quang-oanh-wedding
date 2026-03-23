@@ -210,6 +210,7 @@ const WEDDING_LOCATION = "Thôn 3 Hạ Lôi, Mê Linh, Hà Nội, Việt Nam";
 
   let currentIndex = 0;
   let isAnimating = false;
+  let currentAnimationCleanup = null;
   const totalItems = galleryItems.length;
 
   if (totalSpan) totalSpan.textContent = totalItems;
@@ -226,6 +227,11 @@ const WEDDING_LOCATION = "Thôn 3 Hạ Lôi, Mê Linh, Hà Nội, Việt Nam";
   function slideToImage(newIndex, direction) {
     if (isAnimating || newIndex === currentIndex) return;
 
+    // If a previous animation cleanup exists, run it to ensure clean state
+    if (currentAnimationCleanup) {
+      currentAnimationCleanup();
+    }
+
     isAnimating = true;
 
     const currentImg = container.querySelector(".lightbox-image.current");
@@ -241,22 +247,63 @@ const WEDDING_LOCATION = "Thôn 3 Hạ Lôi, Mê Linh, Hà Nội, Việt Nam";
     // Add animation class to container (with direction)
     container.classList.add("animate", `slide-${direction}`);
 
-    // Wait for animation to complete
-    setTimeout(() => {
+    // Animation end handler
+    let finished = false;
+    function finishTransition() {
+      if (finished) return;
+      finished = true;
       container.classList.remove("animate", `slide-${direction}`);
-      currentImg.remove();
+      if (currentImg && currentImg.parentElement) currentImg.remove();
       nextImg.classList.remove("next");
       nextImg.classList.add("current");
-      
       currentIndex = newIndex;
-      currentSpan.textContent = newIndex + 1;
+      if (currentSpan) currentSpan.textContent = newIndex + 1;
       isAnimating = false;
-    }, 600);
+      // cleanup hookup
+      nextImg.removeEventListener("animationend", onAnimEnd);
+      if (currentImg) currentImg.removeEventListener("animationend", onAnimEnd);
+      currentAnimationCleanup = null;
+    }
+
+    function onAnimEnd(e) {
+      // only handle when animation ends on the next image (safety)
+      if (e.target === nextImg) finishTransition();
+    }
+
+    // Listen for animationend on the next image (and current as backup)
+    nextImg.addEventListener("animationend", onAnimEnd);
+    if (currentImg) currentImg.addEventListener("animationend", onAnimEnd);
+
+    // Store cleanup so close() can abort animations safely
+    currentAnimationCleanup = () => {
+      // remove listeners
+      try {
+        nextImg.removeEventListener("animationend", onAnimEnd);
+        if (currentImg) currentImg.removeEventListener("animationend", onAnimEnd);
+      } catch (_) {}
+      // remove animation classes and orphaned next image
+      container.classList.remove("animate", `slide-${direction}`);
+      if (nextImg && nextImg.parentElement) nextImg.remove();
+      isAnimating = false;
+      currentAnimationCleanup = null;
+    };
   }
 
   function open(index) {
-    if (index === currentIndex && currentSpan.textContent === String(index + 1)) {
-      return;
+    // If modal is not currently active, reset container and any running animation
+    if (!modal.classList.contains("active")) {
+      if (currentAnimationCleanup) {
+        currentAnimationCleanup();
+        currentAnimationCleanup = null;
+      }
+      isAnimating = false;
+      container.classList.remove("animate", "slide-left", "slide-right");
+      container.innerHTML = ""; // ensure clean DOM
+    } else {
+      // if modal already active and requesting same index, noop
+      if (index === currentIndex && currentSpan.textContent === String(index + 1)) {
+        return;
+      }
     }
 
     const img = galleryItems[index].querySelector("img");
@@ -266,7 +313,7 @@ const WEDDING_LOCATION = "Thôn 3 Hạ Lôi, Mê Linh, Hà Nội, Việt Nam";
       const firstImg = createImageElement(img.src, img.alt, "current");
       container.appendChild(firstImg);
       currentIndex = index;
-      currentSpan.textContent = index + 1;
+      if (currentSpan) currentSpan.textContent = index + 1;
       modal.classList.add("active");
       modal.setAttribute("aria-hidden", "false");
       document.body.style.overflow = "hidden";
@@ -279,6 +326,17 @@ const WEDDING_LOCATION = "Thôn 3 Hạ Lôi, Mê Linh, Hà Nội, Việt Nam";
   }
 
   function close() {
+    // Abort any running animation and cleanup
+    if (currentAnimationCleanup) {
+      try { currentAnimationCleanup(); } catch (_) {}
+      currentAnimationCleanup = null;
+    }
+    isAnimating = false;
+    // Reset container classes and DOM so reopening is deterministic
+    container.classList.remove("animate", "slide-left", "slide-right");
+    // Ensure only a single .current image exists by clearing and leaving nothing
+    container.innerHTML = "";
+
     modal.classList.remove("active");
     modal.setAttribute("aria-hidden", "true");
     document.body.style.overflow = "";

@@ -196,11 +196,11 @@ const WEDDING_LOCATION = "Thôn 3 Hạ Lôi, Mê Linh, Hà Nội, Việt Nam";
 })();
 
 /* ─────────────────────────────────────────────────────────
-   GALLERY LIGHTBOX
+   GALLERY LIGHTBOX — Premium Slide Transitions
 ───────────────────────────────────────────────────────── */
 (function initGalleryLightbox() {
   const modal = document.getElementById("lightbox-modal");
-  const image = document.getElementById("lightbox-image");
+  const container = document.querySelector(".lightbox-container");
   const closeBtn = document.querySelector(".lightbox-close");
   const prevBtn = document.querySelector(".lightbox-prev");
   const nextBtn = document.querySelector(".lightbox-next");
@@ -209,19 +209,73 @@ const WEDDING_LOCATION = "Thôn 3 Hạ Lôi, Mê Linh, Hà Nội, Việt Nam";
   const galleryItems = document.querySelectorAll(".gallery-item");
 
   let currentIndex = 0;
+  let isAnimating = false;
   const totalItems = galleryItems.length;
 
   if (totalSpan) totalSpan.textContent = totalItems;
 
+  function createImageElement(src, alt, className) {
+    const img = document.createElement("img");
+    img.id = className === "current" ? "lightbox-image" : "lightbox-image-next";
+    img.className = `lightbox-image ${className}`;
+    img.src = src;
+    img.alt = alt;
+    return img;
+  }
+
+  function slideToImage(newIndex, direction) {
+    if (isAnimating || newIndex === currentIndex) return;
+
+    isAnimating = true;
+
+    const currentImg = container.querySelector(".lightbox-image.current");
+    const newImg = galleryItems[newIndex].querySelector("img");
+
+    // Create next image element
+    const nextImg = createImageElement(newImg.src, newImg.alt, "next");
+    container.appendChild(nextImg);
+
+    // Force reflow
+    void container.offsetHeight;
+
+    // Add animation class to container (with direction)
+    container.classList.add("animate", `slide-${direction}`);
+
+    // Wait for animation to complete
+    setTimeout(() => {
+      container.classList.remove("animate", `slide-${direction}`);
+      currentImg.remove();
+      nextImg.classList.remove("next");
+      nextImg.classList.add("current");
+      
+      currentIndex = newIndex;
+      currentSpan.textContent = newIndex + 1;
+      isAnimating = false;
+    }, 600);
+  }
+
   function open(index) {
-    currentIndex = index;
+    if (index === currentIndex && currentSpan.textContent === String(index + 1)) {
+      return;
+    }
+
     const img = galleryItems[index].querySelector("img");
-    image.src = img.src;
-    image.alt = img.alt;
-    currentSpan.textContent = index + 1;
-    modal.classList.add("active");
-    modal.setAttribute("aria-hidden", "false");
-    document.body.style.overflow = "hidden";
+
+    // First load - no animation
+    if (!container.querySelector(".lightbox-image")) {
+      const firstImg = createImageElement(img.src, img.alt, "current");
+      container.appendChild(firstImg);
+      currentIndex = index;
+      currentSpan.textContent = index + 1;
+      modal.classList.add("active");
+      modal.setAttribute("aria-hidden", "false");
+      document.body.style.overflow = "hidden";
+      return;
+    }
+
+    // Determine direction
+    const direction = index > currentIndex ? "left" : "right";
+    slideToImage(index, direction);
   }
 
   function close() {

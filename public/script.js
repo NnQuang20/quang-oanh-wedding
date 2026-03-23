@@ -291,11 +291,25 @@ const WEDDING_LOCATION = "Thôn 3 Hạ Lôi, Mê Linh, Hà Nội, Việt Nam";
   }
 
   function animateRollingNumber(rollContainer, newValue) {
-    const currentEl = rollContainer.querySelector(".countdown-number");
+    // Get current active element (the one with .pulse class)
+    const currentEl = rollContainer.querySelector(".countdown-number.pulse");
     
-    // Compare with current displayed value
-    if (currentEl.textContent === newValue) {
-      return; // No change needed
+    // If no change needed, return early
+    if (currentEl && currentEl.textContent === newValue) {
+      return;
+    }
+
+    // Clean up any incomplete animations (remove stale elements)
+    const staleElements = rollContainer.querySelectorAll(".countdown-number:not(.pulse)");
+    staleElements.forEach((el) => el.remove());
+
+    // If this is the first render, just add the number without animation
+    if (!currentEl) {
+      const newEl = document.createElement("span");
+      newEl.className = "countdown-number pulse";
+      newEl.textContent = newValue;
+      rollContainer.appendChild(newEl);
+      return;
     }
 
     // Create next number element
@@ -304,18 +318,23 @@ const WEDDING_LOCATION = "Thôn 3 Hạ Lôi, Mê Linh, Hà Nội, Việt Nam";
     nextEl.textContent = newValue;
     rollContainer.appendChild(nextEl);
 
-    // Trigger animation on both elements simultaneously
-    requestAnimationFrame(() => {
-      currentEl.classList.add("current");
-      
-      // Wait for animation to complete (1000ms)
-      setTimeout(() => {
-        // Replace current with next
-        currentEl.remove();
-        nextEl.classList.remove("next");
-        nextEl.classList.add("pulse");
-      }, 1000);
-    });
+    // Add .current class to current element for animation
+    currentEl.classList.add("current");
+
+    // Force reflow to ensure animations trigger
+    void rollContainer.offsetHeight;
+
+    // Add .animate class to container to trigger synchronized animations
+    rollContainer.classList.add("animate");
+
+    // After animation completes (600ms)
+    setTimeout(() => {
+      rollContainer.classList.remove("animate");
+      currentEl.classList.remove("current");
+      currentEl.remove();
+      nextEl.classList.remove("next");
+      nextEl.classList.add("pulse");
+    }, 600);
   }
 
   function tick() {

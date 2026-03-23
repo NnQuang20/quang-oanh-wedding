@@ -868,11 +868,20 @@ button {
 
 /* ── Premium Rolling Animation ── */
 .countdown-number.current {
-  animation: slideDown 1s cubic-bezier(.22, 1, .36, 1) forwards;
+  /* Animation only triggers when container has .animate class */
 }
 
 .countdown-number.next {
-  animation: slideUp 1s cubic-bezier(.22, 1, .36, 1) forwards;
+  /* Animation only triggers when container has .animate class */
+}
+
+/* Synchronized animations triggered by .animate class on container */
+.countdown-roll.animate .countdown-number.current {
+  animation: slideDown 600ms cubic-bezier(.22, 1, .36, 1) forwards;
+}
+
+.countdown-roll.animate .countdown-number.next {
+  animation: slideUp 600ms cubic-bezier(.22, 1, .36, 1) forwards;
 }
 
 @keyframes slideDown {
@@ -1720,10 +1729,17 @@ textarea {
   position: relative;
 }
 .countdown-number.current {
-  animation: slideDown 1s cubic-bezier(.22, 1, .36, 1) forwards;
+  /* Animation only triggers when container has .animate class */
 }
 .countdown-number.next {
-  animation: slideUp 1s cubic-bezier(.22, 1, .36, 1) forwards;
+  /* Animation only triggers when container has .animate class */
+}
+/* Synchronized animations triggered by .animate class on container */
+.countdown-roll.animate .countdown-number.current {
+  animation: slideDown 600ms cubic-bezier(.22, 1, .36, 1) forwards;
+}
+.countdown-roll.animate .countdown-number.next {
+  animation: slideUp 600ms cubic-bezier(.22, 1, .36, 1) forwards;
 }
 .countdown-label {
   font-size: .75rem;

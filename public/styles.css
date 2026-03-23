@@ -161,8 +161,10 @@ button {
   border-radius: 4px;
   /* Ensure consistent transform (keep scale locked) to avoid shrink during animation */
   transform: translateX(0) scale(1);
+  transform-origin: center;
   will-change: transform, opacity;
   backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
 }
 
 #lightbox-image {
@@ -216,44 +218,44 @@ button {
 @keyframes slideOutLeft {
   from {
     opacity: 1;
-    transform: translateX(0);
+    transform: translateX(0) scale(1);
   }
   to {
     opacity: 0;
-    transform: translateX(-100%);
+    transform: translateX(-100%) scale(1);
   }
 }
 
 @keyframes slideInFromRight {
   from {
     opacity: 0;
-    transform: translateX(100%);
+    transform: translateX(100%) scale(1);
   }
   to {
     opacity: 1;
-    transform: translateX(0);
+    transform: translateX(0) scale(1);
   }
 }
 
 @keyframes slideOutRight {
   from {
     opacity: 1;
-    transform: translateX(0);
+    transform: translateX(0) scale(1);
   }
   to {
     opacity: 0;
-    transform: translateX(100%);
+    transform: translateX(100%) scale(1);
   }
 }
 
 @keyframes slideInFromLeft {
   from {
     opacity: 0;
-    transform: translateX(-100%);
+    transform: translateX(-100%) scale(1);
   }
   to {
     opacity: 1;
-    transform: translateX(0);
+    transform: translateX(0) scale(1);
   }
 }
 

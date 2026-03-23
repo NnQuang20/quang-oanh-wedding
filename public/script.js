@@ -18,8 +18,8 @@ const WEDDING_LOCATION = "Thôn 3 Hạ Lôi, Mê Linh, Hà Nội, Việt Nam";
 
   // Preload critical images
   const criticalImages = [
-    "assets/cover.jpg",
-    "assets/couple.jpg",
+    "assets/cover.webp",
+    "assets/couple.webp",
   ];
 
   let loadedCount = 0;
@@ -249,9 +249,15 @@ const WEDDING_LOCATION = "Thôn 3 Hạ Lôi, Mê Linh, Hà Nội, Việt Nam";
 
     // Animation end handler
     let finished = false;
+    let timeoutId = null;
+
     function finishTransition() {
       if (finished) return;
       finished = true;
+
+      // Clear safety timeout
+      if (timeoutId) clearTimeout(timeoutId);
+
       container.classList.remove("animate", `slide-${direction}`);
       if (currentImg && currentImg.parentElement) currentImg.remove();
       nextImg.classList.remove("next");
@@ -259,29 +265,45 @@ const WEDDING_LOCATION = "Thôn 3 Hạ Lôi, Mê Linh, Hà Nội, Việt Nam";
       currentIndex = newIndex;
       if (currentSpan) currentSpan.textContent = newIndex + 1;
       isAnimating = false;
-      // cleanup hookup
+
+      // Remove listeners
       nextImg.removeEventListener("animationend", onAnimEnd);
       if (currentImg) currentImg.removeEventListener("animationend", onAnimEnd);
       currentAnimationCleanup = null;
     }
 
     function onAnimEnd(e) {
-      // only handle when animation ends on the next image (safety)
-      if (e.target === nextImg) finishTransition();
+      // Handle animation end on either image (safety)
+      if (e.target === nextImg || e.target === currentImg) {
+        finishTransition();
+      }
     }
 
-    // Listen for animationend on the next image (and current as backup)
-    nextImg.addEventListener("animationend", onAnimEnd);
-    if (currentImg) currentImg.addEventListener("animationend", onAnimEnd);
+    // Listen for animationend on both images
+    nextImg.addEventListener("animationend", onAnimEnd, { once: true });
+    if (currentImg) currentImg.addEventListener("animationend", onAnimEnd, { once: true });
+
+    // Safety timeout as fallback (600ms animation + 100ms buffer)
+    timeoutId = setTimeout(() => {
+      if (!finished) {
+        finishTransition();
+      }
+    }, 700);
 
     // Store cleanup so close() can abort animations safely
     currentAnimationCleanup = () => {
-      // remove listeners
+      if (finished) return;
+      finished = true;
+
+      if (timeoutId) clearTimeout(timeoutId);
+
+      // Remove listeners
       try {
         nextImg.removeEventListener("animationend", onAnimEnd);
         if (currentImg) currentImg.removeEventListener("animationend", onAnimEnd);
       } catch (_) {}
-      // remove animation classes and orphaned next image
+
+      // Remove animation classes and orphaned next image
       container.classList.remove("animate", `slide-${direction}`);
       if (nextImg && nextImg.parentElement) nextImg.remove();
       isAnimating = false;
@@ -290,23 +312,28 @@ const WEDDING_LOCATION = "Thôn 3 Hạ Lôi, Mê Linh, Hà Nội, Việt Nam";
   }
 
   function open(index) {
+    // Clamp index to valid range
+    index = Math.max(0, Math.min(index, totalItems - 1));
+
     // If modal is not currently active, reset container and any running animation
     if (!modal.classList.contains("active")) {
       if (currentAnimationCleanup) {
-        currentAnimationCleanup();
+        try { currentAnimationCleanup(); } catch (_) {}
         currentAnimationCleanup = null;
       }
       isAnimating = false;
       container.classList.remove("animate", "slide-left", "slide-right");
       container.innerHTML = ""; // ensure clean DOM
+      currentIndex = 0; // reset index
     } else {
       // if modal already active and requesting same index, noop
-      if (index === currentIndex && currentSpan.textContent === String(index + 1)) {
+      if (index === currentIndex && currentSpan && currentSpan.textContent === String(index + 1)) {
         return;
       }
     }
 
     const img = galleryItems[index].querySelector("img");
+    if (!img) return;
 
     // First load - no animation
     if (!container.querySelector(".lightbox-image")) {
@@ -328,15 +355,22 @@ const WEDDING_LOCATION = "Thôn 3 Hạ Lôi, Mê Linh, Hà Nội, Việt Nam";
   function close() {
     // Abort any running animation and cleanup
     if (currentAnimationCleanup) {
-      try { currentAnimationCleanup(); } catch (_) {}
+      try { 
+        currentAnimationCleanup(); 
+      } catch (_) {}
       currentAnimationCleanup = null;
     }
+
+    // Force reset state
     isAnimating = false;
-    // Reset container classes and DOM so reopening is deterministic
+
+    // Remove all animation classes
     container.classList.remove("animate", "slide-left", "slide-right");
-    // Ensure only a single .current image exists by clearing and leaving nothing
+
+    // Clear container completely to ensure no orphaned images
     container.innerHTML = "";
 
+    // Close modal
     modal.classList.remove("active");
     modal.setAttribute("aria-hidden", "true");
     document.body.style.overflow = "";

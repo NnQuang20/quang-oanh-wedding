@@ -216,19 +216,8 @@ const WEDDING_LOCATION = "Thôn 3 Hạ Lôi, Mê Linh, Hà Nội, Việt Nam";
   function open(index) {
     currentIndex = index;
     const img = galleryItems[index].querySelector("img");
-    
-    // Fade out current image
-    image.classList.add("fade-out");
-    
-    // Wait for fade out, then update image and fade in
-    setTimeout(() => {
-      image.src = img.src;
-      image.alt = img.alt;
-      image.classList.remove("fade-out");
-      image.classList.add("fade-in");
-      setTimeout(() => image.classList.remove("fade-in"), 400);
-    }, 200);
-    
+    image.src = img.src;
+    image.alt = img.alt;
     currentSpan.textContent = index + 1;
     modal.classList.add("active");
     modal.setAttribute("aria-hidden", "false");
@@ -307,7 +296,7 @@ const WEDDING_LOCATION = "Thôn 3 Hạ Lôi, Mê Linh, Hà Nội, Việt Nam";
       setTimeout(() => {
         el.textContent = newValue;
         el.classList.remove("float-down");
-      }, 250);
+      }, 600);
     }
   }
 

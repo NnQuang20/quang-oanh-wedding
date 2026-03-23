@@ -833,6 +833,17 @@ button {
   box-shadow: var(--shadow-md);
 }
 
+/* ── Rolling Number Container ── */
+.countdown-roll {
+  position: relative;
+  height: clamp(3.2rem, 9vw, 4.5rem);
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 8px;
+}
+
 .countdown-number {
   display: block;
   font-family: var(--ff-serif);
@@ -840,11 +851,14 @@ button {
   font-weight: 700;
   color: var(--clr-primary);
   line-height: 1;
-  margin-bottom: 8px;
+  position: absolute;
+  width: 100%;
+  text-align: center;
 }
 
 .countdown-number.pulse {
   animation: countdown-pulse 1.5s ease-in-out infinite;
+  position: relative;
 }
 
 @keyframes countdown-pulse {
@@ -852,29 +866,34 @@ button {
   50% { transform: scale(1.05); }
 }
 
-.countdown-number.float-down {
-  animation: float-down 1s ease-out forwards !important;
+/* ── Premium Rolling Animation ── */
+.countdown-number.current {
+  animation: slideDown 1s cubic-bezier(.22, 1, .36, 1) forwards;
 }
 
-@keyframes float-down {
+.countdown-number.next {
+  animation: slideUp 1s cubic-bezier(.22, 1, .36, 1) forwards;
+}
+
+@keyframes slideDown {
   0% {
     opacity: 1;
-    transform: translateY(0px);
+    transform: translateY(0);
   }
   100% {
     opacity: 0;
-    transform: translateY(60px);
+    transform: translateY(100%);
   }
 }
 
-@keyframes float-up {
+@keyframes slideUp {
   0% {
     opacity: 0;
-    transform: translateY(-60px);
+    transform: translateY(-100%);
   }
   100% {
     opacity: 1;
-    transform: translateY(0px);
+    transform: translateY(0);
   }
 }
 
@@ -1676,6 +1695,15 @@ textarea {
   text-align: center;
   border: 1px solid var(--clr-accent-lt);
 }
+.countdown-roll {
+  position: relative;
+  height: clamp(3.2rem, 9vw, 4.5rem);
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 8px;
+}
 .countdown-number {
   display: block;
   font-family: var(--ff-serif);
@@ -1683,7 +1711,19 @@ textarea {
   font-weight: 700;
   color: var(--clr-primary);
   line-height: 1;
-  margin-bottom: 8px;
+  position: absolute;
+  width: 100%;
+  text-align: center;
+}
+.countdown-number.pulse {
+  animation: countdown-pulse 1.5s ease-in-out infinite;
+  position: relative;
+}
+.countdown-number.current {
+  animation: slideDown 1s cubic-bezier(.22, 1, .36, 1) forwards;
+}
+.countdown-number.next {
+  animation: slideUp 1s cubic-bezier(.22, 1, .36, 1) forwards;
 }
 .countdown-label {
   font-size: .75rem;

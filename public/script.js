@@ -278,36 +278,54 @@ const WEDDING_LOCATION = "Thôn 3 Hạ Lôi, Mê Linh, Hà Nội, Việt Nam";
 })();
 
 /* ─────────────────────────────────────────────────────────
-   COUNTDOWN TIMER
+   COUNTDOWN TIMER — Premium iOS-style Rolling Animation
 ───────────────────────────────────────────────────────── */
 (function initCountdown() {
-  const daysEl = document.getElementById("cd-days");
-  const hoursEl = document.getElementById("cd-hours");
-  const minsEl = document.getElementById("cd-minutes");
-  const secsEl = document.getElementById("cd-seconds");
+  const rollDays = document.getElementById("roll-days");
+  const rollHours = document.getElementById("roll-hours");
+  const rollMins = document.getElementById("roll-minutes");
+  const rollSecs = document.getElementById("roll-seconds");
 
   function pad(n) {
     return String(Math.max(0, n)).padStart(2, "0");
   }
 
-  function animateNumberChange(el, newValue) {
-    if (el.textContent !== newValue) {
-      el.classList.add("float-down");
-      setTimeout(() => {
-        el.textContent = newValue;
-        el.classList.remove("float-down");
-      }, 250);
+  function animateRollingNumber(rollContainer, newValue) {
+    const currentEl = rollContainer.querySelector(".countdown-number");
+    
+    // Compare with current displayed value
+    if (currentEl.textContent === newValue) {
+      return; // No change needed
     }
+
+    // Create next number element
+    const nextEl = document.createElement("span");
+    nextEl.className = "countdown-number next";
+    nextEl.textContent = newValue;
+    rollContainer.appendChild(nextEl);
+
+    // Trigger animation on both elements simultaneously
+    requestAnimationFrame(() => {
+      currentEl.classList.add("current");
+      
+      // Wait for animation to complete (1000ms)
+      setTimeout(() => {
+        // Replace current with next
+        currentEl.remove();
+        nextEl.classList.remove("next");
+        nextEl.classList.add("pulse");
+      }, 1000);
+    });
   }
 
   function tick() {
     const diff = WEDDING_DATE - Date.now();
 
     if (diff <= 0) {
-      animateNumberChange(daysEl, "00");
-      animateNumberChange(hoursEl, "00");
-      animateNumberChange(minsEl, "00");
-      animateNumberChange(secsEl, "00");
+      animateRollingNumber(rollDays, "00");
+      animateRollingNumber(rollHours, "00");
+      animateRollingNumber(rollMins, "00");
+      animateRollingNumber(rollSecs, "00");
       return;
     }
 
@@ -316,10 +334,10 @@ const WEDDING_LOCATION = "Thôn 3 Hạ Lôi, Mê Linh, Hà Nội, Việt Nam";
     const mins = Math.floor((diff % 3600000) / 60000);
     const secs = Math.floor((diff % 60000) / 1000);
 
-    animateNumberChange(daysEl, pad(days));
-    animateNumberChange(hoursEl, pad(hours));
-    animateNumberChange(minsEl, pad(mins));
-    animateNumberChange(secsEl, pad(secs));
+    animateRollingNumber(rollDays, pad(days));
+    animateRollingNumber(rollHours, pad(hours));
+    animateRollingNumber(rollMins, pad(mins));
+    animateRollingNumber(rollSecs, pad(secs));
   }
 
   tick();

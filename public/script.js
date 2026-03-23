@@ -216,11 +216,18 @@ const WEDDING_LOCATION = "Thôn 3 Hạ Lôi, Mê Linh, Hà Nội, Việt Nam";
   if (totalSpan) totalSpan.textContent = totalItems;
 
   function createImageElement(src, alt, className) {
+    // Validate src before creating image
+    if (!src || typeof src !== 'string' || src.trim() === '') {
+      console.assert(src, "Image src is missing or invalid");
+      return null;
+    }
+
     const img = document.createElement("img");
     img.id = className === "current" ? "lightbox-image" : "lightbox-image-next";
     img.className = `lightbox-image ${className}`;
     img.src = src;
-    img.alt = "";
+    img.alt = ""; // Empty alt to prevent "Enlarged gallery image" from showing
+    
     return img;
   }
 
@@ -237,13 +244,20 @@ const WEDDING_LOCATION = "Thôn 3 Hạ Lôi, Mê Linh, Hà Nội, Việt Nam";
     const currentImg = container.querySelector(".lightbox-image.current");
     const newImg = galleryItems[newIndex].querySelector("img");
 
-    if (!currentImg || !newImg) {
+    if (!currentImg || !newImg || !newImg.src) {
       isAnimating = false;
       return;
     }
 
-    // Create next image element
-    const nextImg = createImageElement(newImg.src, newImg.alt, "next");
+    // Create next image element with validation
+    const nextImg = createImageElement(newImg.src, "", "next");
+    
+    // If image creation failed (invalid src), abort
+    if (!nextImg) {
+      isAnimating = false;
+      return;
+    }
+
     container.appendChild(nextImg);
 
     // Force reflow
@@ -351,10 +365,14 @@ const WEDDING_LOCATION = "Thôn 3 Hạ Lôi, Mê Linh, Hà Nội, Việt Nam";
       currentIndex = 0;
 
       const img = galleryItems[index].querySelector("img");
-      if (!img) return;
+      if (!img || !img.src) return;
 
-      // Insert first image
-      const firstImg = createImageElement(img.src, img.alt, "current");
+      // Insert first image with validation
+      const firstImg = createImageElement(img.src, "", "current");
+      
+      // Only proceed if image is valid
+      if (!firstImg) return;
+
       container.appendChild(firstImg);
       currentIndex = index;
       if (currentSpan) currentSpan.textContent = index + 1;
@@ -373,7 +391,7 @@ const WEDDING_LOCATION = "Thôn 3 Hạ Lôi, Mê Linh, Hà Nội, Việt Nam";
 
     // Navigate to different image
     const img = galleryItems[index].querySelector("img");
-    if (!img) return;
+    if (!img || !img.src) return;
 
     const direction = index > currentIndex ? "left" : "right";
     slideToImage(index, direction);

@@ -454,9 +454,22 @@ const WEDDING_LOCATION = "Thôn 3 Hạ Lôi, Mê Linh, Hà Nội, Việt Nam";
 
   // Swipe support
   let touchStartX = 0;
+  let touchStartY = 0;
+  let isSwiping = false;
   modal.addEventListener("touchstart", (e) => {
     touchStartX = e.touches[0].clientX;
-  });
+    touchStartY = e.touches[0].clientY;
+    isSwiping = false;
+  }, { passive: true });
+
+  modal.addEventListener("touchmove", (e) => {
+    const dx = Math.abs(e.touches[0].clientX - touchStartX);
+    const dy = Math.abs(e.touches[0].clientY - touchStartY);
+    if (dx > dy && dx > 10) {
+      isSwiping = true;
+      e.preventDefault();
+    }
+  }, { passive: false });
 
   modal.addEventListener("touchend", (e) => {
     const touchEndX = e.changedTouches[0].clientX;
